@@ -8,14 +8,16 @@
 // document.querySelector(".guess").value = 23;
 // // console.log(document.querySelector(".guess").value);
 
-const secretNumber = Math.floor(Math.random() * 20) + 1;
+let secretNumber = Math.floor(Math.random() * 20) + 1;
 let score = 20;
-document.querySelector(".score").textContent = score;
+let highScore = 0;
 
-//Helpers
+const displayMessage = function (element, message) {
+  document.querySelector(element).textContent = message;
+};
 
-const showMessage = function (element, message) {
-  element.textContent = message;
+const changeBackgroundColor = function (color) {
+  document.body.style.backgroundColor = color;
 };
 
 const scoreCounter = function () {
@@ -24,29 +26,48 @@ const scoreCounter = function () {
   return score;
 };
 
+displayMessage(".score", score);
+
 const checkInputNumber = function (inputSelector, messageSelector) {
   const guess = Number(document.querySelector(inputSelector).value);
-  const message = document.querySelector(messageSelector);
   if (!guess) {
-    showMessage(message, "⛔ there's no number!");
+    displayMessage(".message", "⛔ there's no number!");
   } else if (guess < 1 || guess > 20) {
-    showMessage(message, "⛔ Insert a number between 1 and 20!");
+    displayMessage(".message", "⛔ Insert a number between 1 and 20!");
   } else if (guess < secretNumber) {
     if (score > 0) {
-      showMessage(message, "🔼 More!");
+      displayMessage(".message", "🔼 More!");
       scoreCounter();
-    } else showMessage(message, "😓 You LOSE!");
+    } else displayMessage(".message", "😓 You LOSE!");
   } else if (guess > secretNumber) {
     if (score > 0) {
-      showMessage(message, "🔽 Less!");
+      displayMessage(".message", "🔽 Less!");
       scoreCounter();
-    } else showMessage(message, "😓 You LOSE!");
+    } else displayMessage(".message", "😓 You LOSE!");
   } else {
-    showMessage(message, "💚 Yeah, it's right! 🎉");
-    document.querySelector(".number").textContent = secretNumber;
+    displayMessage(".message", "💚 Yeah, it's right! 🎉");
+    displayMessage(".number", secretNumber);
+    changeBackgroundColor("#60b347");
+    document.querySelector(".number").style = "width: 30rem";
+    if (score > highScore) {
+      highScore = score;
+      displayMessage(".highscore", highScore);
+    }
   }
 };
 
+//Event handlers
 document.querySelector(".check").addEventListener("click", () => {
   checkInputNumber(".guess", ".message");
+});
+
+document.querySelector(".again").addEventListener("click", () => {
+  secretNumber = Math.floor(Math.random() * 20) + 1;
+  score = 20;
+  changeBackgroundColor("#222");
+  document.querySelector(".guess").value = "";
+  document.querySelector(".number").style = "width: 15rem";
+  displayMessage(".message", "Start guessing...");
+  displayMessage(".score", score);
+  displayMessage(".number", "?");
 });
